@@ -196,7 +196,7 @@ class OauthServerController extends Controller
         );
         $request = ServerRequest::fromGlobals();
         $auth = $request->getHeader('Authorization');
-        if ((!$auth || !sizeof($auth)) && $_SERVER['AUTHORIZATION']) {
+        if ((!$auth || !sizeof($auth)) && !empty($_SERVER['AUTHORIZATION'])) {
             $request = $request->withAddedHeader('Authorization', $_SERVER['AUTHORIZATION']);
         }
 
