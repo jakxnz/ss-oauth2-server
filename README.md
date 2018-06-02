@@ -41,14 +41,22 @@ IanSimpson\OAuth2\OauthServerController:
   encryptionKey: ''
 ```
 
-Finally, after doing a `/dev/build/` go into your site settings and on the OAuth Configuration and add a new Client. Using this you should now be able to generate a key at `/oauth/authorize`, per the OAuth 2.0 spec (https://tools.ietf.org/html/rfc6749).
+Finally, after doing a `/dev/build/` go into your site settings and on the OAuth Configuration and add a new Client.
 
 ## Usage
 
-To verify the Authorization header being submitted is correct, add this to your Controller:
+Generate a key at `/oauth/authorize`, per the OAuth 2.0 spec (https://tools.ietf.org/html/rfc6749).
+
+Find more information about the server implementation (https://github.com/thephpleague/oauth2-server)
+
+### grant_type
+
+If you are wondering which `grant_type` you should use, read [this helpful guide](https://oauth2.thephpleague.com/authorization-server/which-grant/)
+
+### Permissions within SilverStripe
+
+Once the request is authorised, you can use the below to confirm the member authorised by the request.
 
 ```
-$member = IanSimpson\OAuth2\OauthServerController::getMember($this);
+$member = IanSimpson\OAuth2\OauthServerController::getMember($this); // returns Member or false
 ```
-
-it will return a Member object if the Authorization header is correct, or false if there's an error. Simple!
