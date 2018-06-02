@@ -24,10 +24,10 @@ use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use League\OAuth2\Server\ResourceServer;
 use Robbie\Psr7\HttpRequestAdapter;
 use Robbie\Psr7\HttpResponseAdapter;
+use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Config\Config_ForClass;
-use SilverStripe\Control\Controller;
 use SilverStripe\Security\Member;
 use Silverstripe\Security\Security;
 
@@ -187,7 +187,7 @@ class OauthServerController extends Controller
     public static function authenticateRequest($controller)
     {
         $config = new Config_ForClass(static::class);
-        $publicKey = Controller::join_links(BASE_PATH, $config->get('publicKey'));;
+        $publicKey = Controller::join_links(BASE_PATH, $config->get('publicKey'));
 
         //Muting errors with @ to stop notice about key permissions
         $server = @new ResourceServer(
@@ -200,20 +200,17 @@ class OauthServerController extends Controller
             $request = $request->withAddedHeader('Authorization', $_SERVER['AUTHORIZATION']);
         }
 
-        try {
-            $request = $server->validateAuthenticatedRequest($request);
-        } catch (Exception $exception) {
-            return false;
-        }
-        return $request;
+        return $server->validateAuthenticatedRequest($request);
     }
 
     public static function getMember($controller)
     {
-        $request = self::authenticateRequest($controller);
-        if (!$request) {
+        try {
+            $request = self::authenticateRequest($controller);
+        } catch (OAuthServerException $e) {
             return false;
         }
+
         return Member::get()->filter([
             "ID" => $request->getAttributes()['oauth_user_id']
         ])->first();
