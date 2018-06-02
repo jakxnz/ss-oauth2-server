@@ -19,6 +19,7 @@ use IanSimpson\OAuth2\Repositories\ScopeRepository;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\Grant\AuthCodeGrant;
+use League\OAuth2\Server\Grant\ClientCredentialsGrant;
 use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use League\OAuth2\Server\ResourceServer;
 use Robbie\Psr7\HttpRequestAdapter;
@@ -84,7 +85,6 @@ class OauthServerController extends Controller
             $encryptionKey
         );
 
-
         // Enable the authentication code grant on the server
         $grant = new AuthCodeGrant(
             $this->myRepositories['authCode'],
@@ -95,6 +95,12 @@ class OauthServerController extends Controller
         $this->server->enableGrantType(
             $grant,
             new DateInterval('PT1H') // access tokens will expire after 1 hour
+        );
+
+        // Enable the client credentials grant on the server
+        $this->server->enableGrantType(
+            new ClientCredentialsGrant(),
+            new DateInterval('PT1H') // new access tokens will expire after 1 hour
         );
 
         // Enable the refresh code grant on the server
